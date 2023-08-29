@@ -12,8 +12,8 @@ app.use(cors())
 app.use(express.json())
 
 //code 
-app.get('/', (req, res) =>{
-    res.send('Task management server running')
+app.get('/', (req, res) => {
+  res.send('Task management server running')
 })
 
 //mongodb
@@ -43,25 +43,40 @@ async function run() {
 
     //create user
     app.post('/users', async (req, res) => {
-        const user = req.body;
-        const query = { email: user.email }
-        console.log(user);
-        const consisting = await usersCollection.findOne(query);
-        if (consisting) {
-          return res.send(consisting)
-        }
-        const result = await usersCollection.insertOne(user)
-        res.send(result)
-      })
+      const user = req.body;
+      const query = { email: user.email }
+      // console.log(user);
+      const consisting = await usersCollection.findOne(query);
+      if (consisting) {
+        return res.send(consisting)
+      }
+      const result = await usersCollection.insertOne(user)
+      res.send(result)
+    })
+
+    //get user info
+    app.get('/users/:uid', async (req, res) => {
+      const uid = req.params.uid;
+      const query = { uid: uid };
+      const result = await usersCollection.findOne(query);
+      res.send(result)
+    })
 
 
-      // task management
-      app.post('/tasks', async(req, res) =>{
-        const task = req.body;
-        // console.log(task);
-        const result = await taskCollection.insertOne(task)
-        res.send(result)
-      })
+    // task management
+    app.post('/tasks', async (req, res) => {
+      const task = req.body;
+      // console.log(task);
+      const result = await taskCollection.insertOne(task)
+      res.send(result)
+    })
+
+    // load all task
+    app.get('/tasks', async (req, res) =>{
+      const tasks = await taskCollection.find().toArray();
+      // console.log(tasks);
+      res.send(tasks)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
