@@ -62,6 +62,8 @@ async function run() {
       res.send(result)
     })
 
+    
+
 
     // task management
     app.post('/tasks', async (req, res) => {
@@ -85,6 +87,20 @@ async function run() {
       res.send(result)
     })
 
+    //update user
+    app.put('/user/:id', async(req, res) => {
+      const query = {_id: new ObjectId(req.params.id)};
+      const newUser = {
+        $set: {
+          doing: req.body.doing,
+          done: req.body.done
+        }
+      }
+      const result = await usersCollection.updateOne(query, newUser);
+      // console.log(result);
+      res.send(result)
+    })
+
     //edit task
     app.put('/task/:id', async(req, res) => {
       const filter = {_id: new ObjectId(req.params.id)};
@@ -93,6 +109,14 @@ async function run() {
       const result = await taskCollection.replaceOne(filter, newTask)
       res.send(result)
     })
+
+    //delete task
+    app.delete('/task/:id', async(req, res) =>{
+      const query = {_id: new ObjectId(req.params.id)}
+      const result = await taskCollection.deleteOne(query);
+      res.send(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
