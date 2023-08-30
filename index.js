@@ -5,7 +5,7 @@ const port = process.env.PORT || 5000;
 
 require('dotenv').config();
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 //middleware
 app.use(cors())
@@ -76,6 +76,22 @@ async function run() {
       const tasks = await taskCollection.find().toArray();
       // console.log(tasks);
       res.send(tasks)
+    })
+
+    //load task by email
+    app.get('/tasks/:uid', async(req, res) =>{
+      const query = {creatorId: req.params.uid};
+      const result = await taskCollection.find(query).toArray();
+      res.send(result)
+    })
+
+    //edit task
+    app.put('/task/:id', async(req, res) => {
+      const filter = {_id: new ObjectId(req.params.id)};
+      const newTask = req.body;
+      // console.log(newTask);
+      const result = await taskCollection.replaceOne(filter, newTask)
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
